@@ -1,13 +1,15 @@
 import React, { useContext, useState } from "react";
 import loginImg from "../../../assets/images/login/login.svg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { AuthContext } from "../../../Contexts/AuthProvider";
 
 const Login = () => {
-  const {signInUser} = useContext(AuthContext);
+  const {signInUser,gSignin} = useContext(AuthContext);
   const [error,setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/'
   const handleRegister = (event) => {
   
     event.preventDefault();
@@ -15,19 +17,31 @@ const Login = () => {
     const email = form.email.value;
     const password = form.password.value;
 
-    console.log( email, password);
+    //console.log( email, password);
     signInUser(email,password)
     .then(res => {
       const user = res.user;
       //console.log(user);
       form.reset();
       setError('');
-      navigate('/');
+      navigate(from,{replace:true});
     })
     .catch(error=>{
       setError(error.message);
     })
   } 
+  const googleSingin = () => {
+    gSignin()
+    .then(res=> {
+      const user = res.user;
+      //console.log(user);
+      setError('');
+      navigate(from,{replace:true});
+    })
+    .catch(error=>{
+      setError(error.message);
+    })
+  }
   return (
     <div className="hero min-h-screen ">
     <div className="hero-content flex-col lg:flex-row gap-8">
@@ -69,7 +83,7 @@ const Login = () => {
             <p>Or Sign In with</p>
             <>
               {" "}
-              <FcGoogle />{" "}
+              <FcGoogle className=" hover:cursor-pointer" onClick={googleSingin} />{" "}
             </>{" "}
           </div>
           <div className="">

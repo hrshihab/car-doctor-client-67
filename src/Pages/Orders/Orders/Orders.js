@@ -3,23 +3,36 @@ import OrdersRow from './OrdersRow';
 import { AuthContext } from '../../../Contexts/AuthProvider';
 
 const Orders = () => {
-  const {user} = useContext(AuthContext);
-  const {email} =user;
+  const {user,logout} = useContext(AuthContext);
+  
   const [orders,setOrders] = useState([]);
   //console.log(orders);
 useEffect(()=> {
-  fetch(`http://localhost:5000/orders?email=${email}`)
-  .then(res=>res.json())
+  fetch(`https://car-doctor-server-sigma-indol.vercel.app/orders?email=${user?.email}`,{
+    headers:{
+      authorization : `Bearer ${localStorage.getItem('genius-token')}`
+    },
+  })
+  .then(res=>{
+   
+      if (res.status === 401 || res.status === 403) {
+          return logout();
+      }
+      return res.json()
+  })
   .then(result=> {
     setOrders(result);
   })
   .catch(error=> console.error(error))
-},[email])
+},[user?.email,logout])
 
 const handleDelete = id => {
-  fetch(`http://localhost:5000/orders/${id}`,
+  fetch(`https://car-doctor-server-sigma-indol.vercel.app/orders/${id}`,
   {
-    method:"DELETE"
+    method:"DELETE",
+    headers: {
+      authorization : `Bearer ${localStorage.getItem('genius-token')}`
+    },
   })
   .then(res=>res.json())
   .then(result=> {
@@ -37,11 +50,12 @@ const handleStatusUpdate = id => {
   const agree = window.confirm(`Are you sure to Approving the service `);
    
    if(agree) {
-    fetch(`http://localhost:5000/orders/${id}`,
+    fetch(`https://car-doctor-server-sigma-indol.vercel.app/orders/${id}`,
     {
       method:'PATCH',
       headers:{
-        'content-type' : 'application/json'
+        'content-type' : 'application/json',
+        authorization : `Bearer ${localStorage.getItem('genius-token')}`
       },
       body:JSON.stringify({})
     })

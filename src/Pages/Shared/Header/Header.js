@@ -23,9 +23,7 @@ const Header = () => {
       <li className=" font-semibold">
         <Link to="/services">Service</Link>
       </li>
-      <li className=" font-semibold">
-        <Link to="/orders">Order</Link>
-      </li>
+      
       <li className=" font-semibold">
         <Link to="/about">About</Link>
       </li>
@@ -33,7 +31,10 @@ const Header = () => {
         <Link to="/blog">Blog</Link>
       </li>
       {user?.email ? (
-        <></>
+        <>
+        <li className=" font-semibold">
+        <Link to="/orders">Order</Link>
+      </li></>
       ) : (
         <li className=" font-semibold">
           <Link to="/login">Login</Link>

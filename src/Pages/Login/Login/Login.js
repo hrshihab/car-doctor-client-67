@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import loginImg from "../../../assets/images/login/login.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
 import { AuthContext } from "../../../Contexts/AuthProvider";
+import { auth } from "../../../Jwt/Auth";
+import SocialSignIn from "../Social/SocialSignIn";
 
 const Login = () => {
   const {signInUser,gSignin} = useContext(AuthContext);
@@ -21,27 +22,22 @@ const Login = () => {
     signInUser(email,password)
     .then(res => {
       const user = res.user;
+      
       //console.log(user);
       form.reset();
-      setError('');
+      setError(''); 
+
+      //get jwt
+      auth(user);
+  
+
       navigate(from,{replace:true});
     })
     .catch(error=>{
       setError(error.message);
     })
   } 
-  const googleSingin = () => {
-    gSignin()
-    .then(res=> {
-      const user = res.user;
-      //console.log(user);
-      setError('');
-      navigate(from,{replace:true});
-    })
-    .catch(error=>{
-      setError(error.message);
-    })
-  }
+  
   return (
     <div className="hero min-h-screen ">
     <div className="hero-content flex-col lg:flex-row gap-8">
@@ -81,10 +77,7 @@ const Login = () => {
           <p className=" text-red-500 text-center">{error}</p>
           <div className="grid justify-items-center mt-6 leading-10">
             <p>Or Sign In with</p>
-            <>
-              {" "}
-              <FcGoogle className=" hover:cursor-pointer" onClick={googleSingin} />{" "}
-            </>{" "}
+            <SocialSignIn></SocialSignIn>
           </div>
           <div className="">
             <p className="text-center">

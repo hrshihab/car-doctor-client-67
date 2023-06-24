@@ -1,10 +1,11 @@
 import React, { useContext, useState } from 'react';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../Contexts/AuthProvider';
 import Services from '../../Home/Services/Services';
 
 const CheckOut = () => {
   const data = useLoaderData();
+  const navigate = useNavigate();
   const {user} = useContext(AuthContext);
   const [services,setServices] = useState(data);
   const {_id,title,price} = services;
@@ -30,11 +31,12 @@ const CheckOut = () => {
     }
     //console.log(userInfo);
     try {
-      const response = await fetch(`http://localhost:5000/services/${_id}`,
+      const response = await fetch(`https://car-doctor-server-sigma-indol.vercel.app/services/${_id}`,
       {
         method:"POST",
         headers:{
-          'content-type' : 'application/json'
+          'content-type' : 'application/json',
+           authorization : `Bearer ${localStorage.getItem('genius-token')}`
         },
         body:JSON.stringify(userInfo)
       })
@@ -42,9 +44,13 @@ const CheckOut = () => {
       //console.log(result);
       if(result.acknowledged)
       {alert('successfully placed');
-      form.reset();}
+      form.reset();
+      navigate('/orders')
+    }
+      else alert('failed')
     } catch (error) {
       console.log(error.message);
+      alert('Failed', error.message)
     }
 
     
